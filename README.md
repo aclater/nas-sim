@@ -71,4 +71,4 @@ Their sources: UBI and Hummingbird source RPMs from Red Hat
 [Hummingbird source containers](https://hummingbird-project.io/docs/using/overview/)), and
 Fedora's from [src.fedoraproject.org](https://src.fedoraproject.org/). This project's own files
 are under the MIT licence ([LICENSE](LICENSE)). The images' `org.opencontainers.image.licenses`
-label is `MIT AND GPL-2.0-only`.
+label is `MIT AND GPL-2.0-only AND LGPL-2.1-or-later` (our files, BusyBox, glibc); the other base packages keep the licences their sources list.
