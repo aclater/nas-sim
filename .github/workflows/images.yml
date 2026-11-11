@@ -1,0 +1,54 @@
+# Build every image, run the smoke test on it, and on main publish it to
+# ghcr.io/aclater/nas-sim/<platform> (:latest and :<commit>). Pull requests build and test only.
+name: images
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 5 * * 1"  # weekly: rebuild on the pinned bases' current packages
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  image:
+    name: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [asustor, openmediavault, qnap, readynas, synology, terramaster, truenas, ugreen, unraid]
+    permissions:
+      contents: read
+      # Publishing to ghcr.io (used only on main; see the guarded step).
+      packages: write
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      IMAGE: ghcr.io/aclater/nas-sim/${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build
+        run: RUNTIME=docker ./build.sh "$PLATFORM"
+      - name: Smoke test
+        run: RUNTIME=docker ./tests/smoke.sh "$PLATFORM"
+      - name: Publish
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          for tag in latest "$GITHUB_SHA"; do
+            docker tag "localhost/nas-sim/$PLATFORM" "$IMAGE:$tag"
+            docker push "$IMAGE:$tag"
+          done
+          docker logout ghcr.io

@@ -1,0 +1,2 @@
+# expect: /etc/config/uLinux.conf /share/CACHEDEV1_DATA/Public /usr/sbin/getcfg /usr/sbin/setcfg /usr/sbin/hal_app
+# check: [ "$(readlink -f /usr/bin/sh)" = /usr/bin/busybox ]; ! command -v dash >/dev/null; setcfg Misc Autorun TRUE; [ "$(getcfg Misc Autorun)" = TRUE ]; [ "$(getcfg System Model)" = nas-sim ]

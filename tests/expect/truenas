@@ -1,0 +1,2 @@
+# expect: /usr/bin/midclt /mnt/tank
+# check: midclt call system.info | grep -q nas-sim

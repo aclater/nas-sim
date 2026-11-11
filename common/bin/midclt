@@ -1,0 +1,9 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# nas-sim stand-in for a middleware client (written for nas-sim): answers system.info only.
+if [ "$1" = call ] && [ "$2" = system.info ]; then
+    echo '{"version": "nas-sim", "hostname": "nas-sim"}'
+    exit 0
+fi
+echo "nas-sim midclt: only 'call system.info'" >&2
+exit 1

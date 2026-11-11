@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+# nas-sim/ugreen: a simulated UGREEN UGOS Pro layout, from unmodified Fedora packages. Build from the
+# repository root.
+FROM registry.fedoraproject.org/fedora-minimal@sha256:d79d518f5e13610a6d6525873fb9893ca5cfa5075ac8d5997e6907c87b0a6659
+USER 0
+RUN dnf -y -q install --setopt=install_weak_deps=False dash tar gzip util-linux findutils procps-ng kmod && ln -sf dash /usr/bin/sh && dnf clean all
+COPY platforms/ugreen/root/ /
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+LABEL org.opencontainers.image.title="nas-sim/ugreen" \
+      org.opencontainers.image.description="Simulated UGREEN UGOS Pro layout for install tests: identity files, userland, storage paths. Not the vendor's system." \
+      org.opencontainers.image.source="https://github.com/aclater/nas-sim" \
+      org.opencontainers.image.licenses="MIT AND GPL-2.0-only AND LGPL-2.1-or-later" \
+      io.github.aclater.nas-sim.platform="ugreen" \
+      io.github.aclater.nas-sim.shell="dash (bash also present)" \
+      io.github.aclater.nas-sim.systemd="present (not running in the container)" \
+      io.github.aclater.nas-sim.container-engine="absent (Docker is an app)"
+CMD ["/bin/sh"]
