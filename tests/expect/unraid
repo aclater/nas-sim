@@ -1,0 +1,2 @@
+# expect: /etc/unraid-version /boot/config/go /mnt/user /mnt/disk1
+# check: grep -q version= /etc/unraid-version

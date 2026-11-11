@@ -1,0 +1,18 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# nas-sim stand-in: set KEY in [SECTION] of an ini-style file (written for nas-sim).
+#   setcfg SECTION KEY VALUE [-f FILE]
+section=$1 key=$2 value=$3
+shift 3
+file=/etc/config/uLinux.conf
+while [ "$#" -gt 0 ]; do
+    case $1 in -f) file=$2; shift ;; esac
+    shift
+done
+touch "$file"
+awk -v s="[$section]" -v k="$key" -v v="$value" '
+    function put() { if (!done) { print k " = " v; done = 1 } }
+    /^\[/ { if (in_s) put(); in_s = ($0 == s); seen = seen || in_s; print; next }
+    in_s { split($0, a, " = "); if (a[1] == k) { put(); next } }
+    { print }
+    END { if (in_s) put(); else if (!seen) { print s; put() } }' "$file" >"$file.new" && mv "$file.new" "$file"

@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT
+# nas-sim/synology: a simulated Synology DSM layout, from unmodified UBI 9 packages. Build from the
+# repository root.
+FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:f8700bef6b1c99d806c13e43542ce9f2534b137914ade791e4ced7283221147b
+USER 0
+RUN microdnf -y install tar gzip util-linux findutils procps-ng kmod wget && microdnf clean all
+COPY common/bin/esynoscheduler /usr/syno/sbin/esynoscheduler
+COPY platforms/synology/root/ /
+ENV PATH=/usr/syno/sbin:/usr/syno/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+LABEL org.opencontainers.image.title="nas-sim/synology" \
+      org.opencontainers.image.description="Simulated Synology DSM layout for install tests: identity files, userland, storage paths. Not the vendor's system." \
+      org.opencontainers.image.source="https://github.com/aclater/nas-sim" \
+      org.opencontainers.image.licenses="MIT AND GPL-2.0-only" \
+      io.github.aclater.nas-sim.platform="synology" \
+      io.github.aclater.nas-sim.shell="bash" \
+      io.github.aclater.nas-sim.systemd="present (not running in the container)" \
+      io.github.aclater.nas-sim.container-engine="absent (Container Manager is a package)"
+CMD ["/bin/sh"]

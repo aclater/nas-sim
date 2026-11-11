@@ -1,0 +1,2 @@
+# expect: /etc/nas.conf /usr/builtin /usr/local/etc/init.d /volume1
+# check: [ "$(readlink -f /usr/bin/sh)" = /usr/bin/busybox ]; ! command -v dash >/dev/null; ! command -v bash >/dev/null; command -v curl >/dev/null

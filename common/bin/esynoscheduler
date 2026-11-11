@@ -1,0 +1,41 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# nas-sim stand-in for a task scheduler command line (written for nas-sim; it only keeps a
+# list). Tasks are lines "name<TAB>event<TAB>operation" in $DB.
+#   esynoscheduler --list | --create task_name=N event=E [key=value...] | --delete task_name=N | --get task_name=N
+DB=${NAS_SIM_TASKS:-/usr/syno/etc/esynoscheduler/nas-sim-tasks}
+mkdir -p "$(dirname "$DB")"
+touch "$DB"
+cmd=$1
+[ "$#" -gt 0 ] && shift
+name='' event='' op=''
+for a in "$@"; do
+    case $a in
+        task_name=*) name=${a#*=} ;;
+        event=*) event=${a#*=} ;;
+        operation=*) op=${a#*=} ;;
+    esac
+done
+case $cmd in
+    --list)
+        awk -F '\t' 'BEGIN { printf "[" } { printf "%s{\"name\":\"%s\",\"event\":\"%s\",\"operation\":\"%s\"}", (NR > 1 ? "," : ""), $1, $2, $3 } END { print "]" }' "$DB"
+        ;;
+    --get)
+        awk -F '\t' -v n="$name" '$1 == n { print; f = 1 } END { exit !f }' "$DB"
+        ;;
+    --create)
+        [ -n "$name" ] && [ -n "$event" ] || { echo "nas-sim esynoscheduler: task_name and event are required" >&2; exit 1; }
+        if awk -F '\t' -v n="$name" '$1 == n { f = 1 } END { exit !f }' "$DB"; then
+            echo "nas-sim esynoscheduler: task $name exists" >&2
+            exit 1
+        fi
+        printf '%s\t%s\t%s\n' "$name" "$event" "$op" >>"$DB"
+        ;;
+    --delete)
+        awk -F '\t' -v n="$name" '$1 != n' "$DB" >"$DB.new" && mv "$DB.new" "$DB"
+        ;;
+    *)
+        echo "nas-sim esynoscheduler: --list, --get, --create, --delete" >&2
+        exit 1
+        ;;
+esac

@@ -1,0 +1,2 @@
+# expect: /etc.defaults/VERSION /etc/synoinfo.conf /usr/syno/sbin/esynoscheduler /volume1 /usr/local/etc/rc.d
+# check: command -v bash >/dev/null; esynoscheduler --create task_name=t event=bootup operation=true; esynoscheduler --list | grep -q "\"t\""; esynoscheduler --delete task_name=t; ! esynoscheduler --list | grep -q "\"t\""

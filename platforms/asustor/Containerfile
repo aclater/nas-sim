@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT
+# nas-sim/asustor: a simulated ASUSTOR ADM layout on a BusyBox userland, from unmodified Hummingbird
+# packages (glibc, busybox, curl). Build from the repository root.
+FROM registry.access.redhat.com/hi/core-runtime@sha256:f82d57a594aea1f6763b25224286bcd85b1fbf5bc22f4f1a5b04b8b91864ef92 AS build
+USER 0
+COPY common/busybox-rootfs.sh /usr/local/bin/
+RUN busybox-rootfs.sh /rootfs curl
+COPY platforms/asustor/root/ /rootfs/
+
+FROM scratch
+COPY --from=build /rootfs/ /
+ENV PATH=/usr/bin:/usr/sbin:/sbin:/bin
+LABEL org.opencontainers.image.title="nas-sim/asustor" \
+      org.opencontainers.image.description="Simulated ASUSTOR ADM layout for install tests: identity files, userland, storage paths. Not the vendor's system." \
+      org.opencontainers.image.source="https://github.com/aclater/nas-sim" \
+      org.opencontainers.image.licenses="MIT AND GPL-2.0-only" \
+      io.github.aclater.nas-sim.platform="asustor" \
+      io.github.aclater.nas-sim.shell="busybox" \
+      io.github.aclater.nas-sim.systemd="absent" \
+      io.github.aclater.nas-sim.container-engine="absent (Docker is an app)"
+CMD ["/usr/bin/sh"]

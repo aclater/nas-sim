@@ -1,0 +1,8 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# nas-sim stand-in (written for nas-sim): --get_boot_pd names a boot device that doesn't
+# exist. Run the image with "--tmpfs /tmp/config" to stand in for the mounted config partition.
+case $1 in
+    --get_boot_pd) echo /dev/nas-sim-boot ;;
+    *) echo "nas-sim hal_app: only --get_boot_pd" >&2; exit 1 ;;
+esac

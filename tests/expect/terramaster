@@ -1,0 +1,2 @@
+# expect: /etc/tos/conf/tos.conf /Volume1
+# check: command -v bash >/dev/null

@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+# nas-sim/readynas: a simulated Netgear ReadyNAS OS 6 layout, from unmodified UBI 7 (glibc 2.17) packages. Build from the
+# repository root.
+FROM registry.access.redhat.com/ubi7/ubi@sha256:046e525722f14702c360dc6092324af7c21656e76b0c254b067871f1d4d3df68
+USER 0
+RUN yum -y -q install tar gzip util-linux findutils procps-ng kmod curl && yum clean all
+COPY platforms/readynas/root/ /
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+LABEL org.opencontainers.image.title="nas-sim/readynas" \
+      org.opencontainers.image.description="Simulated Netgear ReadyNAS OS 6 layout for install tests: identity files, userland, storage paths. Not the vendor's system." \
+      org.opencontainers.image.source="https://github.com/aclater/nas-sim" \
+      org.opencontainers.image.licenses="MIT AND GPL-2.0-only" \
+      io.github.aclater.nas-sim.platform="readynas" \
+      io.github.aclater.nas-sim.shell="bash (the real one has dash)" \
+      io.github.aclater.nas-sim.systemd="present (not running in the container)" \
+      io.github.aclater.nas-sim.container-engine="absent"
+CMD ["/bin/sh"]

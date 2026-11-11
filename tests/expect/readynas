@@ -1,0 +1,2 @@
+# expect: /frontview /data
+# check: [ "$(ldd --version | sed -n "1s/.* //p")" = 2.17 ]
