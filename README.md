@@ -12,6 +12,35 @@ No vendor binaries, firmware or copied configuration are included. The identity 
 the few keys install scripts look for, with made-up values. They imitate a layout; they are not
 the vendor's system.
 
+## Quick start
+
+You need Podman (or Docker) and git.
+
+1. Run a published image:
+
+   ```
+   podman run --rm ghcr.io/aclater/nas-sim/synology:latest cat /etc.defaults/VERSION
+   ```
+
+2. Build one image locally and check it:
+
+   ```
+   git clone https://github.com/aclater/nas-sim.git
+   cd nas-sim
+   ./build.sh synology
+   ./tests/smoke.sh synology
+   ```
+
+   The smoke test prints `nas-sim/synology: pass`.
+
+3. Open a shell in it to try an install script:
+
+   ```
+   podman run --rm -it localhost/nas-sim/synology
+   ```
+
+[Use](#use) has the other platforms and the options some of them need.
+
 ## Images
 
 Published from `main` as `ghcr.io/aclater/nas-sim/<platform>:latest` (and `:<commit>`), x86_64.
